@@ -10,4 +10,6 @@ void EnemyManagerUpdate();
 void EnemyManagerDraw();
 void EnemyManagerSpawn();
 
+Enemy* GetEnemies(); 
+
 #endif

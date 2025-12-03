@@ -8,6 +8,11 @@ Enemy enemies[MAX_ENEMIES];
 static float spawnTimer = 0;
 static float spawnInterval = 2.0f;
 
+
+Enemy* GetEnemies() {
+    return enemies;
+}
+
 void EnemyManagerInit() {
     for (int i = 0; i < MAX_ENEMIES; i++) {
         enemies[i].active = false;

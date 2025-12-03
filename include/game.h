@@ -23,5 +23,6 @@ void GameUnload();
 void DrawUI();
 int GetUIHeight();
 int GetPlayableHeight();
+void ImageColorTransparentTolerance(Image* image, Color target, int tolerance);
 
 #endif

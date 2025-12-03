@@ -11,6 +11,7 @@ typedef struct Enemy {
     Vector2 pivot;
     RigidBody body;
     bool active;
+    int explosionDamage;
 } Enemy;
 
 extern Enemy enemy;

@@ -21,6 +21,7 @@ void EnemyInit(Enemy* enemy) {
         (int)round(enemy->body.height * 0.5f)
     };
     enemy->active = true;
+    enemy->explosionDamage = 50;
 }
 
 void EnemyUpdate(Enemy* enemy, float deltaTime) {

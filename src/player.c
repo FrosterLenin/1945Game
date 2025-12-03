@@ -2,6 +2,8 @@
 #include "raylib.h"
 #include "game.h"
 #include <math.h>
+#include "enemy.h"
+#include "enemy_manager.h"
 
 Player player;
 static float frameTimer = 0;
@@ -44,7 +46,16 @@ void PlayerUpdate() {
     player.frame = (int)(GetTime() * framesPerSecond) % 3;
 
     //TODO COLLISSION
-    // if(CheckCollisionRecs(PlayerCollider(), EnemyCollider(&enemies[i])))
+    Enemy* enemies = GetEnemies();
+    for(int i = 0; i < MAX_ENEMIES; i++){
+        if (!enemies[i].active) continue;
+        if(CheckCollisionRecs(PlayerCollider(), EnemyCollider(&enemies[i]))){
+            player.energy-= enemies[i].explosionDamage;
+            if(player.life <= 0)
+                player.life--;
+        }
+    }
+    
 }
 
 void PlayerDraw() {

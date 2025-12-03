@@ -4,7 +4,8 @@
 #include "raylib.h"
 #include "enemy_manager.h"
 
-static Textures tex;  // singleton
+static Textures tex;
+static Image altasImage;
 static Color backgroundColor;
 const int SpriteSheetMargin = 3;
 const int SpriteSheetBorder = 1;
@@ -32,13 +33,14 @@ int GetPlayableHeight() {
 
 
 void LoadTextures() {
-    Image image = LoadImage("assets/1945_atlas.bmp");      // Load as image (CPU)
+    altasImage = LoadImage("assets/1945_atlas.png");      // Load as image (CPU)
+    ImageFormat(&altasImage, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8);
     int bgPos = SpriteSheetMargin + SpriteSheetMargin + SpriteSheetBorder;
-    backgroundColor = GetImageColor(image, bgPos, bgPos);  // Read pixel color
+    backgroundColor = GetImageColor(altasImage, bgPos, bgPos);  // Read pixel color
     tex.count = 1;
     tex.textures = malloc(sizeof(Texture2D) * tex.count);
 
-    tex.textures[0] = LoadTextureFromImage(image);
+    tex.textures[0] = LoadTextureFromImage(altasImage);
 }
 void GameInit() {
     LoadTextures();
@@ -79,7 +81,7 @@ void DrawUI(){
     // LOGO
     int offsetY = GetSpriteSheetOffset() + (32 * 12) + 12;
     int offsetX = GetSpriteSheetOffset() + (32 * 21) + 21;
-    Rectangle spriteFramePosition = { offsetX, offsetY, 126, 65 };
+    Rectangle spriteFramePosition = (Rectangle){ offsetX, offsetY, 126, 65 };
     Vector2 position = (Vector2) {GetScreenWidth() - 130, GetScreenHeight() - 72};
     DrawTextureRec(atlas, spriteFramePosition, position, WHITE);
 
@@ -88,9 +90,23 @@ void DrawUI(){
     for(int i = 0; i < currentPlayerLife; i++){
         int offsetY = GetSpriteSheetOffset() + (32 * 8) + 8;
         int offsetX = GetSpriteSheetOffset() + (32 * 6) + 6;
-        Rectangle spriteFramePosition = { offsetX, offsetY, 32, 32 };
-        Vector2 position = (Vector2) {10 +( i * 32), GetScreenHeight() - 60};
-        DrawTextureRec(atlas, spriteFramePosition, position, WHITE);
+        Rectangle spriteFramePosition = (Rectangle){ offsetX, offsetY, 32, 32 };
+        Vector2 position = (Vector2) {11 + (i * 32), GetScreenHeight() - 75};
+        Image cropped = ImageFromImage(altasImage, spriteFramePosition);
+        Color colorToReplace = GetImageColor(cropped, 0, 0);
+
+        ImageColorReplace(&cropped, colorToReplace, (Color){0,0,0,0});
+        Texture2D textureWithTrasparency = LoadTextureFromImage(cropped);
+        UnloadImage(cropped);
+        DrawTexture(textureWithTrasparency, position.x, position.y, WHITE);
+        UnloadTexture(textureWithTrasparency);
     }
+
+    // PLAYER ENERGY BAR
+    offsetY = GetSpriteSheetOffset() + (32 * 6) + 6;
+    offsetX = GetSpriteSheetOffset() + (32 * 11) + 11;
+    spriteFramePosition = (Rectangle){ offsetX, offsetY, 198, 32 };
+    position = (Vector2){10 , GetScreenHeight() - 35};
+    DrawTextureRec(atlas, spriteFramePosition, position, WHITE);
     
 }
