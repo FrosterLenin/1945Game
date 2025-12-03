@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "raylib.h": "c",
+        "player.h": "c",
+        "game.h": "c",
+        "stdlib.h": "c",
+        "math.h": "c",
+        "rigidbody.h": "c"
+    }
+}
