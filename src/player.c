@@ -49,18 +49,18 @@ void PlayerUpdate() {
     player.frame = (int)(GetTime() * framesPerSecond) % 3;
 
     //TODO COLLISSION
-    Enemy* enemies = GetEnemies();
-    for(int i = 0; i < MAX_ENEMIES; i++){
-        if (!enemies[i].active) continue;
-        if(CheckCollisionRecs(PlayerCollider(), EnemyCollider(&enemies[i]))){
-            EnemyDestroy(&enemies[i]);
-            player.energy -= enemies[i].explosionDamage;
-            if(player.energy <= 0){
-                player.energy = MAX_ENERGY;
-                player.life--;
-            }
-        }
-    }
+    // Enemy* enemies = GetEnemies();
+    // for(int i = 0; i < MAX_ENEMIES; i++){
+    //     if (!enemies[i].active) continue;
+    //     if(CheckCollisionRecs(PlayerCollider(), EnemyCollider(&enemies[i]))){
+    //         EnemyDestroy(&enemies[i]);
+    //         player.energy -= enemies[i].explosionDamage;
+    //         if(player.energy <= 0){
+    //             player.energy = MAX_ENERGY;
+    //             player.life--;
+    //         }
+    //     }
+    // }
     
 }
 

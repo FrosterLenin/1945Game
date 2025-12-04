@@ -1,5 +1,6 @@
 #include "enemy.h"
 #include "game.h"
+#include "player.h"
 #include "bullets.h"
 #include "animation.h"
 #include <math.h>
@@ -37,7 +38,14 @@ void EnemyUpdate(Enemy* enemy, float deltaTime) {
     int framesPerSecond = 6;
     enemy->frame = (int)(GetTime() * framesPerSecond) % 3;
 
+    if(CheckCollisionRecs(PlayerCollider(), EnemyCollider(enemy))){
+        EnemyDestroy(enemy);
+        PlayerTakeDamage(enemy->explosionDamage);
+    }
+
     EnemyShoot(enemy);
+
+
     // Despawn when off-screen
     if (enemy->body.position.y - enemy->pivot.y > GetPlayableHeight()) {
        enemy->active = false;
