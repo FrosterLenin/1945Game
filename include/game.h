@@ -2,6 +2,12 @@
 #define GAME_H
 #include "raylib.h"
 
+// Define entity types
+typedef enum {
+    ENTITY_PLAYER,
+    ENTITY_ENEMY
+} EntityType;
+
 
 #define MAX_TEXTURES 5
 

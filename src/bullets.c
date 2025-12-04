@@ -1,5 +1,7 @@
 #include "bullets.h"
 #include "player.h"
+#include "enemy.h"
+#include "enemy_manager.h"
 #include "game.h"
 Bullet bullets[MAX_BULLETS];
 
@@ -19,15 +21,27 @@ Bullet* GetFreeBullet() {
 }
 
 void UpdateBullets() {
+    Enemy* enemies = GetEnemies();
     float deltaTime = GetFrameTime();
     for (int i = 0; i < MAX_BULLETS; i++) {
         if (bullets[i].active) {
             // bullets[i].body.position.x += bullets[i].body.velocity.x * deltaTime;
             bullets[i].body.position.y += bullets[i].body.velocity.y * deltaTime;
 
-            if (CheckCollisionCircleRec(bullets[i].body.position, bullets[i].body.width * .5f, PlayerCollider())) {
+            if (bullets[i].owner == ENTITY_ENEMY && CheckCollisionCircleRec(bullets[i].body.position, bullets[i].body.width * .5f, PlayerCollider())) {
                 PlayerTakeDamage(bullets[i].damage);
                 bullets[i].active = false; 
+            }
+
+            if (bullets[i].owner == ENTITY_PLAYER){
+                for (int i = 0; i < MAX_ENEMIES; i++){
+                    if (!enemies[i].active) continue;
+                    
+                    if(CheckCollisionCircleRec(bullets[i].body.position, bullets[i].body.width * .5f, EnemyCollider(&enemies[i]))) {
+                        EnemyTakeDamage(&enemies[i], bullets[i].damage);
+                        bullets[i].active = false; 
+                    }
+                }
             }
             // deactivate if off screen
             if (bullets[i].body.position.y < 0 || bullets[i].body.position.y > GetPlayableHeight()) 

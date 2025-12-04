@@ -6,6 +6,7 @@
         "stdlib.h": "c",
         "math.h": "c",
         "rigidbody.h": "c",
-        "bullets.h": "c"
+        "bullets.h": "c",
+        "stdbool.h": "c"
     }
 }

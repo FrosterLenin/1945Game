@@ -11,6 +11,9 @@ typedef struct {
     Vector2 pivot;
     int life;
     int energy;
+    int bulletDamage;
+    float shootTimer;
+    float shootInterval;
 } Player;
 
 void PlayerInit();
@@ -24,5 +27,6 @@ int GetPlayerEnergy();
 void KeepPlayerInsideScreen();
 Rectangle PlayerCollider();
 void PlayerTakeDamage(int damage);
+void PlayerShoot();
 
 #endif

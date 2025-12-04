@@ -28,6 +28,7 @@ void EnemyInit(Enemy* enemy) {
     enemy->bulletDamage = 10;
     enemy->shootInterval = 2;
     enemy->shootTimer = .0f;
+    enemy->energy = 20;
 }
 
 void EnemyUpdate(Enemy* enemy, float deltaTime) {
@@ -75,6 +76,13 @@ void EnemyUnload(Enemy* enemy) {
     UnloadTexture(*enemy->sprite);
 }
 
+void EnemyTakeDamage(Enemy* enemy, int damage){
+    enemy->energy -= damage;
+    if(enemy->energy <=0){
+        EnemyDestroy(enemy);
+    }
+}
+
 void EnemyDestroy(Enemy* enemy){
     enemy->active = false;
     int offsetY = GetSpriteSheetOffset() + (32 * 5) + 5;
@@ -90,6 +98,7 @@ void EnemyShoot(Enemy *enemy) {
         Bullet *bullet = GetFreeBullet();
         Vector2 bulletPosition = (Vector2){enemy->pivot.x, enemy->body.position.y + enemy->body.height};
         if (bullet) {
+            bullet->owner = ENTITY_ENEMY;
             bullet->active = true;
             bullet->body.position = bulletPosition;
             bullet->body.velocity = (Vector2){0, 150};

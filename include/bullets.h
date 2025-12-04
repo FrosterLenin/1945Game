@@ -2,12 +2,14 @@
 #define BULLETS_H
 
 #include "raylib.h"
+#include "game.h"
 #include "rigidbody.h"
 #include <stdbool.h>
 
 #define MAX_BULLETS 64
 
 typedef struct {
+    EntityType owner;
     bool active;
     RigidBody body;
     Texture2D sprite;

@@ -15,6 +15,7 @@ typedef struct Enemy {
     int bulletDamage;
     float shootTimer;
     float shootInterval;
+    int energy;
 } Enemy;
 
 extern Enemy enemy;
@@ -26,6 +27,7 @@ Rectangle EnemyCollider(Enemy* enemy);
 void EnemyUnload(Enemy* enemy);
 
 void EnemyDestroy(Enemy* enemy);
+void EnemyTakeDamage(Enemy* enemy, int damage);
 void EnemyShoot(Enemy *enemy);
 
 #endif
