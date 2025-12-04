@@ -6,10 +6,6 @@
 
 int main(void)
 {
-    const int screenWidth = 640;
-    const int screenHeight = 480;
-
-    InitWindow(screenWidth, screenHeight, "1945");
     const char* appDirectory = GetApplicationDirectory();
     ChangeDirectory(appDirectory);
 

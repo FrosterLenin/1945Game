@@ -6,8 +6,8 @@
 #define MAX_TEXTURES 3
 
 Texture2D* GetTextures();
-void LoadTextures();
-void UnloadTextures();
+void LoadAssets();
+void UnloadAssets();
 
 const int* GetSpriteSheetMargin();
 const int* GetSpriteSheetBorder();

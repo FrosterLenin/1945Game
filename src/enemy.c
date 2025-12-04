@@ -1,5 +1,6 @@
 #include "enemy.h"
 #include "game.h"
+#include "bullets.h"
 #include "animation.h"
 #include <math.h>
 
@@ -72,4 +73,13 @@ void EnemyDestroy(Enemy* enemy){
     int offsetX = GetSpriteSheetOffset() + (32 * 2) + 2;
     Vector2 explosionPosition = (Vector2){enemy->body.position.x + enemy->pivot.x, enemy->body.position.y + enemy->pivot.y};
     StartAnimation(enemy->body.position, (Rectangle){offsetX, offsetY, 32, 32}, 6, GetTextures()[0], 32, 32);
+}
+
+void EnemyShoot(Enemy *enemy) {
+    Bullet *bullet = GetFreeBullet();
+    if (bullet) {
+        bullet->active = true;
+        bullet->position = enemy->body.position;
+        bullet->velocity = (Vector2){0, 200};
+    }
 }

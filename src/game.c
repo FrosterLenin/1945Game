@@ -6,6 +6,7 @@
 #include "enemy_manager.h"
 #include <stdio.h>
 
+static Music bgMusic;
 static Texture2D* textures;
 static Image* images;
 static Color backgroundColor;
@@ -13,7 +14,8 @@ const int SpriteSheetMargin = 3;
 const int SpriteSheetBorder = 1;
 const int UiBarHeight = 80;
 const int EnergyBarWidth = 127;
-
+const int ScreenWidth = 640;
+const int ScreenHeight = 480;
 
 const int* GetSpriteSheetMargin(){
     return &SpriteSheetMargin;
@@ -35,7 +37,10 @@ int GetPlayableHeight() {
 }
 
 
-void LoadTextures() {
+void LoadAssets() {
+    bgMusic = LoadMusicStream("assets/audio/background.mp3");
+    bgMusic.looping = true;
+    SetMusicVolume(bgMusic, .5f);
     images = malloc(sizeof(Image) * MAX_TEXTURES);
     images[0] = LoadImage("assets/1945_atlas.bmp");
     images[1] = ImageCopy(images[0]);
@@ -53,11 +58,17 @@ void LoadTextures() {
     textures[2] = LoadTextureFromImage(images[2]);
 }
 void GameInit() {
-    LoadTextures();
+    InitWindow(ScreenWidth, ScreenHeight, "1945");
+    InitAudioDevice();
+
+    LoadAssets();
+    PlayMusicStream(bgMusic);
+
     PlayerInit();
     EnemyManagerInit();
 }
 void GameUpdate() {
+    UpdateMusicStream(bgMusic);
     PlayerUpdate();
     EnemyManagerUpdate();
 }
@@ -75,10 +86,12 @@ void GameDraw() {
 
 
 void GameUnload() {
-    UnloadTextures();
+    UnloadMusicStream(bgMusic);
+    CloseAudioDevice();
+    UnloadAssets();
     PlayerUnload();
 }
-void UnloadTextures() {
+void UnloadAssets() {
     for (int i = 0; i < MAX_TEXTURES; i++)
         UnloadTexture(textures[i]);
     for (int i = 0; i < MAX_TEXTURES; i++)
