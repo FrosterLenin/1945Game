@@ -14,25 +14,30 @@ void EnemyInit(Enemy* enemy) {
     int positionX = GetRandomValue(100, GetScreenWidth() - 100);
     int positionY = -50;
     enemy->body.position = (Vector2){ positionX, positionY };
-    enemy->body.velocity = (Vector2){ 0, 60 }; // falling
+    enemy->body.velocity = (Vector2){ 0, 40 }; // falling
 
     enemy->body.width = 32;
     enemy->body.height = 32;
     enemy->pivot = (Vector2){
-        (int)round(enemy->body.width * 0.5f),
-        (int)round(enemy->body.height * 0.5f)
+        (int)round(enemy->body.position.x),
+        (int)round(enemy->body.position.y + (enemy->body.height * .5f))
     };
     enemy->active = true;
     enemy->explosionDamage = 34;
+    enemy->bulletDamage = 10;
+    enemy->shootInterval = 2;
+    enemy->shootTimer = .0f;
 }
 
 void EnemyUpdate(Enemy* enemy, float deltaTime) {
     enemyFrameTimer += GetFrameTime();
 
     enemy->body.position.y += enemy->body.velocity.y * deltaTime;
+    enemy->pivot.y += enemy->body.velocity.y * deltaTime;
     int framesPerSecond = 6;
     enemy->frame = (int)(GetTime() * framesPerSecond) % 3;
 
+    EnemyShoot(enemy);
     // Despawn when off-screen
     if (enemy->body.position.y - enemy->pivot.y > GetPlayableHeight()) {
        enemy->active = false;
@@ -45,19 +50,14 @@ void EnemyDraw(Enemy* enemy) {
 
     Rectangle spriteFramePosition = { offsetX, offsetY, 32, -32 };
 
-    Vector2 currentPosition = (Vector2) {enemy->body.position.x - enemy->pivot.x, enemy->body.position.y - enemy->pivot.y};
+    Vector2 currentPosition = (Vector2) {enemy->body.position.x, enemy->body.position.y};
     DrawTextureRec(*enemy->sprite, spriteFramePosition, currentPosition, WHITE);
 }
 
 Rectangle EnemyCollider(Enemy* enemy) {
-    Vector2 topLeftOfTheSprite = {
-        enemy->body.position.x - enemy->pivot.x,
-        enemy->body.position.y - enemy->pivot.y
-    };
-
     return (Rectangle){
-        topLeftOfTheSprite.x,
-        topLeftOfTheSprite.y,
+        enemy->body.position.x,
+        enemy->body.position.y,
         enemy->body.width,
         enemy->body.height
     };
@@ -71,15 +71,24 @@ void EnemyDestroy(Enemy* enemy){
     enemy->active = false;
     int offsetY = GetSpriteSheetOffset() + (32 * 5) + 5;
     int offsetX = GetSpriteSheetOffset() + (32 * 2) + 2;
-    Vector2 explosionPosition = (Vector2){enemy->body.position.x + enemy->pivot.x, enemy->body.position.y + enemy->pivot.y};
-    StartAnimation(enemy->body.position, (Rectangle){offsetX, offsetY, 32, 32}, 6, GetTextures()[0], 32, 32);
+    Vector2 explosionPosition = (Vector2){enemy->pivot.x, enemy->pivot.y};
+    StartAnimation(enemy->body.position, (Rectangle){0, 0, 32, 32}, 6, GetTextures()[3], 32, 32, false);
 }
 
 void EnemyShoot(Enemy *enemy) {
-    Bullet *bullet = GetFreeBullet();
-    if (bullet) {
-        bullet->active = true;
-        bullet->position = enemy->body.position;
-        bullet->velocity = (Vector2){0, 200};
+    enemy->shootTimer += GetFrameTime();
+    if (enemy->shootTimer >= enemy->shootInterval) {
+        enemy->shootTimer = .0f;
+        Bullet *bullet = GetFreeBullet();
+        Vector2 bulletPosition = (Vector2){enemy->pivot.x, enemy->body.position.y + enemy->body.height};
+        if (bullet) {
+            bullet->active = true;
+            bullet->body.position = bulletPosition;
+            bullet->body.velocity = (Vector2){0, 150};
+            bullet->sprite = GetTextures()[4];
+            bullet->body.height = 7;
+            bullet->body.width = 7;
+            bullet->damage = enemy->bulletDamage;
+        }
     }
 }

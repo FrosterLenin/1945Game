@@ -3,7 +3,7 @@
 Animation animations[MAX_ANIMATIONS];
 int animationCount = 0;
 
-void StartAnimation(Vector2 position, Rectangle firstSprite, int fps, Texture2D spriteSheet, int frameWidth, int frameHeight) {
+void StartAnimation(Vector2 position, Rectangle firstSprite, int fps, Texture2D spriteSheet, int frameWidth, int frameHeight, bool fromSpriteSheet) {
     if (animationCount < MAX_ANIMATIONS) {
         animations[animationCount].position = position;
         animations[animationCount].currentFrame = 0;
@@ -13,6 +13,7 @@ void StartAnimation(Vector2 position, Rectangle firstSprite, int fps, Texture2D 
         animations[animationCount].spriteSheet = spriteSheet;
         animations[animationCount].frameWidth = frameWidth;
         animations[animationCount].frameHeight = frameHeight;
+        animations[animationCount].fromSpriteSheet = fromSpriteSheet;
         animationCount++;
     }
 }
@@ -29,13 +30,16 @@ void UpdateAndDrawAnimations() {
 
         // Draw current frame
         if (currentAnimation->currentFrame < 6) {
-            Rectangle src = (Rectangle){
-                currentAnimation->firstSprite.x + ((currentAnimation->frameWidth * currentAnimation->currentFrame) + currentAnimation->currentFrame),
+            int sritesheetPositionX = currentAnimation->fromSpriteSheet 
+                ? currentAnimation->firstSprite.x + ((currentAnimation->frameWidth * currentAnimation->currentFrame) + currentAnimation->currentFrame)
+                : currentAnimation->firstSprite.x + (currentAnimation->frameWidth * currentAnimation->currentFrame);
+            Rectangle sritesheetPosition = (Rectangle){
+                sritesheetPositionX,
                 currentAnimation->firstSprite.y,
                 currentAnimation->frameWidth,
                 currentAnimation->frameHeight
             };
-            DrawTextureRec(currentAnimation->spriteSheet, src, currentAnimation->position, WHITE);
+            DrawTextureRec(currentAnimation->spriteSheet, sritesheetPosition, currentAnimation->position, WHITE);
             i++; // next animation
         } 
         else {

@@ -111,6 +111,14 @@ void KeepPlayerInsideScreen() {
         player.body.position.y = GetPlayableHeight() - player.pivot.y;
 }
 
+void PlayerTakeDamage(int damage){
+    player.energy -= damage;
+    if(player.energy <= 0){
+        player.energy = MAX_ENERGY;
+        player.life--;
+    }
+}
+
 void PlayerUnload() {
     UnloadTexture(*player.sprite);
 }

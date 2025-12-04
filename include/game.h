@@ -3,7 +3,7 @@
 #include "raylib.h"
 
 
-#define MAX_TEXTURES 3
+#define MAX_TEXTURES 5
 
 Texture2D* GetTextures();
 void LoadAssets();

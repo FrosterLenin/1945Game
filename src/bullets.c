@@ -1,5 +1,6 @@
 #include "bullets.h"
-
+#include "player.h"
+#include "game.h"
 Bullet bullets[MAX_BULLETS];
 
 void InitBullets() {
@@ -21,14 +22,16 @@ void UpdateBullets() {
     float deltaTime = GetFrameTime();
     for (int i = 0; i < MAX_BULLETS; i++) {
         if (bullets[i].active) {
-            bullets[i].position.x += bullets[i].velocity.x * deltaTime;
-            bullets[i].position.y += bullets[i].velocity.y * deltaTime;
+            // bullets[i].body.position.x += bullets[i].body.velocity.x * deltaTime;
+            bullets[i].body.position.y += bullets[i].body.velocity.y * deltaTime;
 
-            // deactivate if off screen
-            if (bullets[i].position.y < 0 || bullets[i].position.y > GetScreenHeight() ||
-                bullets[i].position.x < 0 || bullets[i].position.x > GetScreenWidth()) {
-                bullets[i].active = false;
+            if (CheckCollisionCircleRec(bullets[i].body.position, bullets[i].body.width * .5f, PlayerCollider())) {
+                PlayerTakeDamage(bullets[i].damage);
+                bullets[i].active = false; 
             }
+            // deactivate if off screen
+            if (bullets[i].body.position.y < 0 || bullets[i].body.position.y > GetPlayableHeight()) 
+                bullets[i].active = false;
         }
     }
 }
@@ -36,7 +39,8 @@ void UpdateBullets() {
 void DrawBullets() {
     for (int i = 0; i < MAX_BULLETS; i++) {
         if (bullets[i].active) {
-            // DRAW SPRITE
+            // TraceLog(LOG_INFO, "DRAW BULLET");
+            DrawTexture(bullets[i].sprite, bullets[i].body.position.x, bullets[i].body.position.y, WHITE);
         }
     }
 }

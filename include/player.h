@@ -23,5 +23,6 @@ int GetPlayerEnergy();
 
 void KeepPlayerInsideScreen();
 Rectangle PlayerCollider();
+void PlayerTakeDamage(int damage);
 
 #endif

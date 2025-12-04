@@ -12,6 +12,7 @@ typedef struct Enemy {
     RigidBody body;
     bool active;
     int explosionDamage;
+    int bulletDamage;
     float shootTimer;
     float shootInterval;
 } Enemy;

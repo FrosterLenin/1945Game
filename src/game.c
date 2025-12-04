@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include "game.h"
 #include "player.h"
+#include "bullets.h"
 #include "raylib.h"
 #include "animation.h"
 #include "enemy_manager.h"
@@ -45,7 +46,10 @@ void LoadAssets() {
     images[0] = LoadImage("assets/1945_atlas.bmp");
     images[1] = ImageCopy(images[0]);
     images[2] = ImageCopy(images[0]);
-    
+    images[3] = LoadImage("assets/enemy/explosion1_strip6.png");
+    images[4] = LoadImage("assets/enemy/enemybullet2.png");
+
+
     int bgPos = SpriteSheetMargin + SpriteSheetMargin + SpriteSheetBorder;
     backgroundColor = GetImageColor(images[0], bgPos, bgPos);
     ImageColorReplace(&images[1], backgroundColor, GRAY);
@@ -56,6 +60,8 @@ void LoadAssets() {
     textures[0] = LoadTextureFromImage(images[0]);
     textures[1] = LoadTextureFromImage(images[1]);
     textures[2] = LoadTextureFromImage(images[2]);
+    textures[3] = LoadTextureFromImage(images[3]);
+    textures[4] = LoadTextureFromImage(images[4]);
 }
 void GameInit() {
     InitWindow(ScreenWidth, ScreenHeight, "1945");
@@ -66,17 +72,20 @@ void GameInit() {
 
     PlayerInit();
     EnemyManagerInit();
+    InitBullets();
 }
 void GameUpdate() {
     UpdateMusicStream(bgMusic);
     PlayerUpdate();
     EnemyManagerUpdate();
+    UpdateBullets();
 }
 void GameDraw() {
     BeginDrawing();
     ClearBackground(backgroundColor);
 
     EnemyManagerDraw(); 
+    DrawBullets();
     DrawUI(); // after enenmies so they pass trought the UI
     PlayerDraw();
     UpdateAndDrawAnimations();
