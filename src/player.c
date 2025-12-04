@@ -9,7 +9,7 @@ Player player;
 static float frameTimer = 0;
 
 void PlayerInit() {
-    player.sprite = &GetTextures()->textures[0];
+    player.sprite = &GetTextures()[0];
     player.frame = 0;
 
     float positionX = GetScreenWidth() * .5f;
@@ -21,11 +21,14 @@ void PlayerInit() {
     player.body.height = 65;
     player.pivot = (Vector2){(int)round(player.body.width * .5f), (int)round(player.body.height *.5f)};
     player.life = 3;
-    player.energy = 100;
+    player.energy = MAX_ENERGY;
 }
 
 int GetPlayerLife(){
     return player.life;
+}
+int GetPlayerEnergy(){
+    return player.energy;
 }
 
 void PlayerUpdate() {
@@ -50,9 +53,12 @@ void PlayerUpdate() {
     for(int i = 0; i < MAX_ENEMIES; i++){
         if (!enemies[i].active) continue;
         if(CheckCollisionRecs(PlayerCollider(), EnemyCollider(&enemies[i]))){
-            player.energy-= enemies[i].explosionDamage;
-            if(player.life <= 0)
+            EnemyDestroy(&enemies[i]);
+            player.energy -= enemies[i].explosionDamage;
+            if(player.energy <= 0){
+                player.energy = MAX_ENERGY;
                 player.life--;
+            }
         }
     }
     

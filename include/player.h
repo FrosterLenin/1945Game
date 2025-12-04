@@ -2,6 +2,7 @@
 #define PLAYER_H
 
 #include "rigidbody.h"
+#define MAX_ENERGY 100
 
 typedef struct {
     Texture2D* sprite;
@@ -18,6 +19,8 @@ void PlayerDraw();
 void PlayerUnload();
 
 int GetPlayerLife();
+int GetPlayerEnergy();
+
 void KeepPlayerInsideScreen();
 Rectangle PlayerCollider();
 

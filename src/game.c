@@ -2,14 +2,17 @@
 #include "game.h"
 #include "player.h"
 #include "raylib.h"
+#include "animation.h"
 #include "enemy_manager.h"
+#include <stdio.h>
 
-static Textures tex;
-static Image altasImage;
+static Texture2D* textures;
+static Image* images;
 static Color backgroundColor;
 const int SpriteSheetMargin = 3;
 const int SpriteSheetBorder = 1;
 const int UiBarHeight = 80;
+const int EnergyBarWidth = 127;
 
 
 const int* GetSpriteSheetMargin(){
@@ -21,8 +24,8 @@ const int* GetSpriteSheetBorder(){
 int GetSpriteSheetOffset(){
     return SpriteSheetBorder + SpriteSheetMargin;
 }
-Textures* GetTextures() {
-    return &tex;
+Texture2D* GetTextures() {
+    return textures;
 }
 int GetUIHeight() {
     return UiBarHeight;  
@@ -33,14 +36,21 @@ int GetPlayableHeight() {
 
 
 void LoadTextures() {
-    altasImage = LoadImage("assets/1945_atlas.png");      // Load as image (CPU)
-    ImageFormat(&altasImage, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8);
+    images = malloc(sizeof(Image) * MAX_TEXTURES);
+    images[0] = LoadImage("assets/1945_atlas.bmp");
+    images[1] = ImageCopy(images[0]);
+    images[2] = ImageCopy(images[0]);
+    
     int bgPos = SpriteSheetMargin + SpriteSheetMargin + SpriteSheetBorder;
-    backgroundColor = GetImageColor(altasImage, bgPos, bgPos);  // Read pixel color
-    tex.count = 1;
-    tex.textures = malloc(sizeof(Texture2D) * tex.count);
+    backgroundColor = GetImageColor(images[0], bgPos, bgPos);
+    ImageColorReplace(&images[1], backgroundColor, GRAY);
+    // Color spriteSheetBlack = GetImageColor(images[0], 1, 1);
+    ImageColorReplace(&images[2], BLACK, GRAY);
+    textures = (Texture2D*)(malloc(sizeof(Texture2D) * MAX_TEXTURES));
 
-    tex.textures[0] = LoadTextureFromImage(altasImage);
+    textures[0] = LoadTextureFromImage(images[0]);
+    textures[1] = LoadTextureFromImage(images[1]);
+    textures[2] = LoadTextureFromImage(images[2]);
 }
 void GameInit() {
     LoadTextures();
@@ -58,7 +68,8 @@ void GameDraw() {
     EnemyManagerDraw(); 
     DrawUI(); // after enenmies so they pass trought the UI
     PlayerDraw();
-
+    UpdateAndDrawAnimations();
+    
     EndDrawing();
 }
 
@@ -68,38 +79,36 @@ void GameUnload() {
     PlayerUnload();
 }
 void UnloadTextures() {
-    for (int i = 0; i < tex.count; i++)
-        UnloadTexture(tex.textures[i]);
-
-    free(tex.textures);
+    for (int i = 0; i < MAX_TEXTURES; i++)
+        UnloadTexture(textures[i]);
+    for (int i = 0; i < MAX_TEXTURES; i++)
+        UnloadImage(images[i]);
+    free(images);
+    free(textures);
 }
 void DrawUI(){
     // BOX
-    DrawRectangle(0, GetScreenHeight() - UiBarHeight, GetScreenWidth(), UiBarHeight, GRAY);
+    Color UIBackgroundColor = GRAY; 
+    DrawRectangle(0, GetScreenHeight() - UiBarHeight, GetScreenWidth(), UiBarHeight, UIBackgroundColor);
 
-    Texture2D atlas = tex.textures[0];
     // LOGO
     int offsetY = GetSpriteSheetOffset() + (32 * 12) + 12;
     int offsetX = GetSpriteSheetOffset() + (32 * 21) + 21;
     Rectangle spriteFramePosition = (Rectangle){ offsetX, offsetY, 126, 65 };
     Vector2 position = (Vector2) {GetScreenWidth() - 130, GetScreenHeight() - 72};
-    DrawTextureRec(atlas, spriteFramePosition, position, WHITE);
+    DrawTextureRec(textures[2], spriteFramePosition, position, WHITE);
 
     // PLAYER LIFE POINTS
+    offsetY = GetSpriteSheetOffset() + (32 * 8) + 8;
+    offsetX = GetSpriteSheetOffset() + (32 * 6) + 6;
+    spriteFramePosition = (Rectangle){ offsetX, offsetY, 32, 32 };
+    
     int currentPlayerLife = GetPlayerLife();
-    for(int i = 0; i < currentPlayerLife; i++){
-        int offsetY = GetSpriteSheetOffset() + (32 * 8) + 8;
-        int offsetX = GetSpriteSheetOffset() + (32 * 6) + 6;
+    for(int i = 0; i < currentPlayerLife; i++){ 
+        
         Rectangle spriteFramePosition = (Rectangle){ offsetX, offsetY, 32, 32 };
         Vector2 position = (Vector2) {11 + (i * 32), GetScreenHeight() - 75};
-        Image cropped = ImageFromImage(altasImage, spriteFramePosition);
-        Color colorToReplace = GetImageColor(cropped, 0, 0);
-
-        ImageColorReplace(&cropped, colorToReplace, (Color){0,0,0,0});
-        Texture2D textureWithTrasparency = LoadTextureFromImage(cropped);
-        UnloadImage(cropped);
-        DrawTexture(textureWithTrasparency, position.x, position.y, WHITE);
-        UnloadTexture(textureWithTrasparency);
+        DrawTextureRec(textures[1], spriteFramePosition, position, WHITE);
     }
 
     // PLAYER ENERGY BAR
@@ -107,6 +116,9 @@ void DrawUI(){
     offsetX = GetSpriteSheetOffset() + (32 * 11) + 11;
     spriteFramePosition = (Rectangle){ offsetX, offsetY, 198, 32 };
     position = (Vector2){10 , GetScreenHeight() - 35};
-    DrawTextureRec(atlas, spriteFramePosition, position, WHITE);
-    
+    DrawTextureRec(textures[2], spriteFramePosition, position, WHITE);
+
+    int barWidth = (GetPlayerEnergy() * EnergyBarWidth) / MAX_ENERGY;
+
+    DrawRectangle(position.x + 7, position.y + 11, barWidth, 10, GREEN);
 }

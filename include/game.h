@@ -2,12 +2,10 @@
 #define GAME_H
 #include "raylib.h"
 
-typedef struct {
-    Texture2D* textures;
-    int count;
-} Textures;
 
-Textures* GetTextures();
+#define MAX_TEXTURES 3
+
+Texture2D* GetTextures();
 void LoadTextures();
 void UnloadTextures();
 
@@ -23,6 +21,6 @@ void GameUnload();
 void DrawUI();
 int GetUIHeight();
 int GetPlayableHeight();
-void ImageColorTransparentTolerance(Image* image, Color target, int tolerance);
+void ImageColorReplaceTolerance(Image image, Color target, int tolerance);
 
 #endif

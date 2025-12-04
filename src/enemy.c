@@ -1,11 +1,12 @@
 #include "enemy.h"
 #include "game.h"
+#include "animation.h"
 #include <math.h>
 
 static float enemyFrameTimer = 0;
 
 void EnemyInit(Enemy* enemy) {
-    enemy->sprite = &GetTextures()->textures[0];
+    enemy->sprite = &GetTextures()[0];
     enemy->frame = 0;
 
     // Spawn top of screen
@@ -21,7 +22,7 @@ void EnemyInit(Enemy* enemy) {
         (int)round(enemy->body.height * 0.5f)
     };
     enemy->active = true;
-    enemy->explosionDamage = 50;
+    enemy->explosionDamage = 34;
 }
 
 void EnemyUpdate(Enemy* enemy, float deltaTime) {
@@ -63,4 +64,12 @@ Rectangle EnemyCollider(Enemy* enemy) {
 
 void EnemyUnload(Enemy* enemy) {
     UnloadTexture(*enemy->sprite);
+}
+
+void EnemyDestroy(Enemy* enemy){
+    enemy->active = false;
+    int offsetY = GetSpriteSheetOffset() + (32 * 5) + 5;
+    int offsetX = GetSpriteSheetOffset() + (32 * 2) + 2;
+    Vector2 explosionPosition = (Vector2){enemy->body.position.x + enemy->pivot.x, enemy->body.position.y + enemy->pivot.y};
+    StartAnimation(enemy->body.position, (Rectangle){offsetX, offsetY, 32, 32}, 6, GetTextures()[0], 32, 32);
 }

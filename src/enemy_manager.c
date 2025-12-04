@@ -43,8 +43,6 @@ void EnemyManagerUpdate() {
         if (!enemies[i].active) continue;
 
         EnemyUpdate(&enemies[i], deltaTime);
-        if(CheckCollisionRecs(PlayerCollider(), EnemyCollider(&enemies[i])))
-            enemies[i].active = false;
     }
 }
 

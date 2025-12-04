@@ -22,4 +22,6 @@ void EnemyDraw(Enemy* enemy);
 Rectangle EnemyCollider(Enemy* enemy);
 void EnemyUnload(Enemy* enemy);
 
+void EnemyDestroy(Enemy* enemy);
+
 #endif
